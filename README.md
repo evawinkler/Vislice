@@ -4,6 +4,6 @@ Jurij Vega
 Ivan Vidav 
 Josip Plemelj 
 
-predsednik države 
+predsednik vlade
+Janez Janša 
 
-Borut Pahor 
