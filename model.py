@@ -1,7 +1,7 @@
-
+import random
 STEVILO_DOVOLJENIH_NAPAK = 10
-#konstante za rezultate ugibanj 
 
+#konstante za rezultate ugibanj 
 PRAVILNA_CRKA = '+'
 PONOVLJENA_CRKA = 'o'
 NAPACNA_CRKA = '-'
@@ -11,30 +11,30 @@ ZMAGA = 'W'
 PORAZ = 'X'
 
 bazen_besed = []
-with open("besede.txt") as datoteka_bazena:
+with open("Vislice/besede.txt") as datoteka_bazena:
     for beseda in datoteka_bazena:
         bazen_besed.append(beseda.strip).lower()
 class Igra:
 
     def __init__(self, geslo, crke=None):
-        self.geslo = geslo
+        self.geslo = geslo.lower()
         if crke is None:
             self.crke = []
         else:
-            self.crke = crke
+            self.crke = crke.lower()
 
     def pravilne_crke(self):
-        return [crka for crka in self.crke if crka in self.geslo]
+        return [c for c in self.crke if c in self.geslo]
 
     def napacne_crke(self):
-        return [crka for crka in self.crke if crka not in self.geslo]
+        return [c for c in self.crke if c not in self.geslo]
     
     def stevilo_napak(self):
         return len(self.napacne_crke())
 
     def zmaga(self):
-        for crka in self.geslo:
-            if crka not in self.crke: 
+        for c in self.geslo:
+            if c not in self.crke: 
                 return False
         return True 
 
@@ -42,13 +42,40 @@ class Igra:
         return self.stevilo_napak() > STEVILO_DOVOLJENIH_NAPAK
     
     def pravilni_del_gesla(self):
-        izpis = ''
+        trenutno = ""
         for crka in self.geslo:
-            if crka in self.pravilne_crke():
-                izpis += crka
+            if crka in self.crke:
+                trenutno += crka
             else: 
-                izpis += '_'
-        return izpis 
+                trenutno += "_"
+
+        return trenutno
     
     def nepravilni_ugibi(self):
-        return ''.join(self.napacne_crke())
+        return " ".join(self.napacne_crke())
+    
+    def ugibaj(self, ugibana_crka):
+        ugibana_crka = ugibana_crka.lower()
+
+        if ugibana_crka in self.crke:
+            return PONOVLJENA_CRKA
+
+        self.crke.append(ugibana_crka)
+        
+        if ugibana_crka in self.geslo: #vedmo da je pravilno uganil
+            #uganil je
+            if self.zmaga():
+                return ZMAGA
+            else: 
+                return PRAVILNA_CRKA
+            
+        else: 
+            if self.poraz():
+                return PORAZ
+            else: 
+                return NAPACNA_CRKA
+    
+    def nova_igra():
+        nakljucna_beseda = random.choice(bazen_besed)
+        return Igra(nakljucna_beseda)
+
