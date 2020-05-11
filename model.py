@@ -75,7 +75,7 @@ class Igra:
             else: 
                 return NAPACNA_CRKA
     
-    def nova_igra():
+def nova_igra():
         nakljucna_beseda = random.choice(bazen_besed)
         return Igra(nakljucna_beseda)
 
