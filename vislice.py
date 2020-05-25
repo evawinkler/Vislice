@@ -2,36 +2,50 @@ import bottle
 
 import model 
 
+ID_IGRE_COOKIE_NAME = "id_igre"
+COOKIE_SECRET = "my_very_special - secret key "
+
 vislice = model.Vislice()  #te veslice so objekt 
+
+vislice.preberi_iz_datoteke()
 
 @bottle.get('/')
 def index():
-    return bottle.template('./Vislice/views/index.tpl')
+    return bottle.template('views/index.tpl')
 
-@bottle.post('/igra/')
+@bottle.post('/nova_igra/')
 def nova_igra():
     id_nove_igre = vislice.nova_igra()
-    bottle.redirect(f"/igra/{id_nove_igre}/")
+
+    #spodnje smo dodali naknadno na zadnjih vajah ta cookie samo
+    bottle.response.set_cookie(
+        ID_IGRE_COOKIE_NAME, str(id_nove_igre), path="/", secret= COOKIE_SECRET
+        
+    )
+    bottle.redirect(f"/igra/")
 
 
 
-@bottle.get('/igra/<id_igre:int>/') #potregnemo igro vn in jo človeku pokažemo
+@bottle.get('/igra/') #potregnemo igro vn in jo človeku pokažemo
 
-def pokazi_igro(id_igre):
+def pokazi_igro():
+    id_igre = int(bottle.request.get_cookie(ID_IGRE_COOKIE_NAME, secret=COOKIE_SECRET))
     igra, poskus = vislice.igre[id_igre]
 
-    return bottle.template('./Vislice/views/igra.tpl',
+    return bottle.template('views/igra.tpl',
                  igra=igra, poskus=poskus, id_igre=id_igre)
 
 
-@bottle.post('/igra/<id_igre:int>/')
-def ugibaj(id_igre):
+
+@bottle.post('/igra/')
+def ugibaj():
+    id_igre = int(bottle.request.get_cookie(ID_IGRE_COOKIE_NAME, secret=COOKIE_SECRET ))
     #dobim crko 
     crka = bottle.request.forms.getunicode('crka')
 
     vislice.ugibaj(id_igre, crka)
 
-    bottle.redirect(f'/igra/{id_igre}/')
+    bottle.redirect(f'/igra/')
 
 
 
